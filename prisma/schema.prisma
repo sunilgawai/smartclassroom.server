@@ -9,3 +9,84 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+enum Role {
+  student
+  teacher
+  admin
+}
+
+model Student {
+  id              String   @id @default(uuid())
+  first_name      String
+  middle_name     String
+  last_name       String
+  email           String
+  phone_no        Int
+  parent_phone_no Int?
+  roll_no         Int
+  password        String?
+  class           Class?   @relation(fields: [class_id], references: [id])
+  class_id        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt()
+}
+
+model Teacher {
+  id              String    @id @default(uuid())
+  first_name      String
+  middle_name     String
+  last_name       String
+  email           String
+  phone_no        Int
+  password        String?
+  class           Class?    @relation(fields: [class_id], references: [id])
+  class_id        String?
+  subject_teacher Subject[]
+  role            Role      @default(teacher)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt()
+}
+
+model Class {
+  id        String    @id @default(uuid())
+  name      String
+  students  Student[]
+  teachers  Teacher[]
+  subjects  Subject[]
+  // class_teacher Teacher
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt()
+}
+
+model Subject {
+  id         String   @id @default(uuid())
+  name       String?
+  teacher    Teacher? @relation(fields: [teacher_id], references: [id])
+  teacher_id String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt()
+  class      Class?   @relation(fields: [class_id], references: [id])
+  class_id   String?
+}
+
+model Time_Table {
+  id        Int      @id @default(autoincrement())
+  // Currently no idea on timetable.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
+model Permission {
+  id         Int      @id @default(autoincrement())
+  permission String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt()
+}
+
+model Document {
+  id        Int      @id @default(autoincrement())
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
